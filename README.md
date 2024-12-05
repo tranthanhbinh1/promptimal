@@ -2,7 +2,7 @@
 
 **Promptimal is the fastest way to optimize your prompts and boost performance on AI tasks.**
 
-Promptimal automatically refines your prompt for a specific task. **It doesn't require a dataset** –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge with self-consistency is used to evaluate the modified prompts, but you can also define your own evaluator function.
+Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge with self-consistency is used to evaluate the modified prompts, but you can also [define your own evaluator function.](#advanced-usage)
 
 [Demo]
 
@@ -30,17 +30,17 @@ You'll be asked to input your task description and initial prompt. Alternatively
 
 ```bash
 > promptimal \
-    --prompt "Does this movie review contain a spoiler? answer Yes or No" \
-    --task_description "Assistant is an expert classifier that will classify a movie review, and let the user know if it contains a spoiler for the reviewed movie or not."
+    --prompt "You will be provided with a piece of code, and your task is to explain it in a concise way." \
+    --task_description "The goal is to generate a summary of a code snippet which will then be embedded and used for vector search."
 ```
 
 Once you're done, a UI will open in your terminal for monitoring the optimization process:
 
-[Image]
+![Demo](./demo.png)
 
 ## Advanced usage
 
-You can control some of the optimization parameters by passing additional command-line arguments:
+You can control the optimization parameters by passing additional command-line arguments:
 
 ```bash
 > promptimal --num_iters=10 --num_samples=20 --threshold=0.7
@@ -50,7 +50,7 @@ You can control some of the optimization parameters by passing additional comman
 2. `num_samples`: Number of candidate prompts to generate in each iteration. Equivalent to the "population size" in an evolutionary algorithm.
 3. `threshold`: Termination threshold for the loop. If a candidate prompt gets a score higher than this threshold, the optimization loop will stop. Default is 1.0.
 
-You can also define your own evaluator.
+You can also define your own evaluator. By default, the
 
 ## Roadmap
 
