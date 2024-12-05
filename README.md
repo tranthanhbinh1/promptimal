@@ -36,7 +36,7 @@ You'll be asked to input your task description and initial prompt. Alternatively
 
 Once you're done, a UI will open in your terminal for monitoring the optimization process:
 
-![Demo](./demo.png)
+<img src="./demo.png" width="720" />
 
 ## Advanced usage
 
