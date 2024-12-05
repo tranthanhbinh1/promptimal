@@ -2,14 +2,14 @@
 
 **Promptimal is the fastest way to optimize your prompts and boost performance on AI tasks.**
 
-Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge technique is used to evaluate the modified prompts, but you also have the option to define your own evaluation function.
+Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge approach is used to evaluate the modified prompts, but you also have the option to define your own evaluation function.
 
-![Demo](./demo.gif)
+![Demo](./assets/demo.gif)
 
 ## Installation
 
 ```bash
-> pip install -U promptimal
+> pipx install promptimal
 ```
 
 ## Quickstart
@@ -36,7 +36,7 @@ You'll be asked to input your task description and initial prompt. Alternatively
 
 Once you're done, a UI will open in your terminal for monitoring the optimization process:
 
-<img src="./demo.png" width="720" />
+<img src="./assets/demo.png" width="720" />
 
 ## Advanced usage
 
@@ -53,7 +53,21 @@ You can control the optimization parameters by passing additional command-line a
 You can also define your own evaluator. By default, promptimal uses an LLM-as-judge with self-consistency to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset, use a custom prompt for the LLM-as-judge, or some other custom technique. To do this, first create a Python file called `evaluator.py`. Then define your own evaluation function in that file, like so:
 
 ```python
-# TODO
+import argparse
+
+def evaluator(prompt: str) -> float:
+    # Your code goes here
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--prompt", required=True, type=str)
+    args = parser.parse_args()
+
+    score = evaluator(args.prompt)
+    print(score)
+
+if __name__ == "__main__":
+    main()
 ```
 
 Once finished, run promptimal with the following command-line argument:
@@ -70,5 +84,3 @@ This file will effectively act as a command-line tool that promptimal can use to
 2. Evolve not only the prompts, but the meta-prompts (based on the [PromptBreeder paper](https://arxiv.org/pdf/2309.16797)).
 3. Pre-define some mutation operators.
 4. Generate synthetic tests as part of the evaluation process.
-
-**Mission:** Make this the easiest-to-use prompt optimizer in the world.

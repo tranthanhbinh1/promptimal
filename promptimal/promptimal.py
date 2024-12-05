@@ -1,16 +1,51 @@
 # Standard library
 import os
 import argparse
+import subprocess
+from typing import Optional, Tuple
 
 # Local
-from promptimal.app import App
+# from promptimal.app import App
+# from promptimal.dtos import PromptCandidate, TokenCount
+from app import App
+from dtos import PromptCandidate, TokenCount
 
-# from app import App
+
+#########
+# HELPERS
+#########
+
+
+def generate_evaluator(evaluator_path: Optional[str]) -> Optional[callable]:
+    if not evaluator_path:
+        return None
+
+    async def evaluator(
+        candidate: PromptCandidate, *args
+    ) -> Tuple[PromptCandidate, TokenCount]:
+        if candidate.fitness != None:
+            return candidate, TokenCount(0, 0)
+
+        result = subprocess.run(
+            ["python", evaluator_path, "--prompt", candidate.prompt],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        candidate.fitness = float(result.stdout.strip())
+        return candidate, TokenCount(0, 0)
+
+    return evaluator
+
+
+######
+# MAIN
+######
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Optimize your prompts using genetic algorithms."
+        description="Optimize your prompts using a genetic algorithm."
     )
     parser.add_argument(
         "--prompt",
@@ -35,7 +70,7 @@ def main():
     )
     parser.add_argument(
         "--num_samples",
-        default=5,
+        default=10,
         required=False,
         type=int,
         help="Number of prompts to generate in each iteration.",
@@ -53,6 +88,13 @@ def main():
         required=False,
         type=str,
         help="OpenAI API key.",
+    )
+    parser.add_argument(
+        "--evaluator",
+        default="",
+        required=False,
+        type=str,
+        help="Path to your custom evaluator script.",
     )
     args = parser.parse_args()
 
@@ -78,6 +120,7 @@ def main():
         population_size=args.num_samples,
         threshold=args.threshold,
         api_key=args.openai_api_key,
+        evaluator=generate_evaluator(args.evaluator),
     )
 
     if args.prompt:

@@ -8,23 +8,22 @@ from typing import Optional
 from openai import AsyncOpenAI
 
 # Local
-from promptimal.optimizer.utils import (
-    crossover,
-    evaluate_fitness,
-    init_population,
-    select_parent,
-    infer_task_description,
-)
-from promptimal.dtos import ProgressStep, PromptCandidate
-
-# from optimizer.utils import (
+# from promptimal.optimizer.utils import (
 #     crossover,
 #     evaluate_fitness,
 #     init_population,
 #     select_parent,
 #     infer_task_description,
 # )
-# from dtos import ProgressStep, PromptCandidate
+# from promptimal.dtos import ProgressStep, PromptCandidate
+from optimizer.utils import (
+    crossover,
+    evaluate_fitness,
+    init_population,
+    select_parent,
+    infer_task_description,
+)
+from dtos import ProgressStep, PromptCandidate
 
 
 async def optimize(
@@ -35,7 +34,9 @@ async def optimize(
     num_elites: int = 2,  # No. of top candidates to pass onto the next generation
     threshold: float = 1.0,
     api_key: str = "",
+    evaluator: Optional[callable] = None,
 ):
+    evaluate = evaluate_fitness if not evaluator else evaluator
     openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY", api_key))
     start_time = time.time()
 
@@ -69,7 +70,7 @@ async def optimize(
     )
 
     tasks = [
-        evaluate_fitness(candidate, task_description, initial_prompt, openai)
+        evaluate(candidate, task_description, initial_prompt, openai)
         for candidate in population
     ]
     for index, task in enumerate(asyncio.as_completed(tasks)):
@@ -108,7 +109,7 @@ async def optimize(
 
         # Evaluate fitness of each candidate
         tasks = [
-            evaluate_fitness(candidate, task_description, initial_prompt, openai)
+            evaluate(candidate, task_description, initial_prompt, openai)
             for candidate in population
         ]
         for i, task in enumerate(asyncio.as_completed(tasks)):
