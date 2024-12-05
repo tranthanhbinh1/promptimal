@@ -11,15 +11,7 @@ In your head, figure out the task step-by-step:
 
 The task description must be clear and concise. Do NOT include any unnecessary information.
 
-Output your response in this format:
-
-<analysis>
-Your step-by-step thinking goes here...
-</analysis>
-
-<task_description>
-Your task description goes here...
-</task_description>"""
+Output both your step-by-step analysis and the task description."""
 
 INIT_POPULATION_PROMPT = """
 You are an expert prompt engineer. You will be given a prompt and your job is to come up with {population_size} better prompts for the following AI task:
@@ -64,15 +56,7 @@ The improved prompt must:
 - Avoid repeating mistakes.
 - Combine the best elements of both prompts.
 
-Output your response in this format:
-
-<analysis>
-Your step-by-step analysis here...
-</analysis>
-
-<combined_prompt>
-Your combined and improved prompt here...
-</combined_prompt>"""
+Output both your step-by-step analysis and the improved prompt."""
 
 EVAL_PROMPT = """
 You are an expert prompt engineer. Your job is to evaluate a prompt for the following AI task:
@@ -93,4 +77,4 @@ You should grade the prompt in the following categories:
 - **Flexibility:** Allows space for creative interpretation.
 - **Structure:** Defines preferred output format and presentation.
 
-Your final evaluation should be a score between 1 and 10 based on the quality of the prompt in these categories."""
+Your final evaluation should be a score between 1 and 10, with 10 being the highest."""

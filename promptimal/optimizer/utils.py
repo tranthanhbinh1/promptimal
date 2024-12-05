@@ -1,16 +1,16 @@
 # Standard library
 import json
 import random
-from typing import List, Optional, Tuple
 from statistics import mean
+from typing import List, Optional, Tuple
 
 # Third party
 import json_repair
 from openai import AsyncOpenAI
 
 # Local
-# from o100.dtos import PromptCandidate, TokenCount
-# from o100.optimizer.prompts import INIT_POPULATION_PROMPT, EVAL_PROMPT, CROSSOVER_PROMPT
+# from promptimal.dtos import PromptCandidate, TokenCount
+# from promptimal.optimizer.prompts import INIT_POPULATION_PROMPT, EVAL_PROMPT, CROSSOVER_PROMPT
 from dtos import PromptCandidate, TokenCount
 from optimizer.prompts import (
     INFER_TASK_PROMPT,
@@ -40,12 +40,35 @@ async def infer_task_description(
         "content": f"Describe the task that the following prompt is used for:\n\n<prompt>\n{prompt}\n</prompt>",
     }
     response = await openai.chat.completions.create(
-        messages=[system_message, user_message], model="gpt-4o", temperature=1.0
+        messages=[system_message, user_message],
+        model="gpt-4o",
+        temperature=1.0,
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "describe_task_response",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "analysis": {
+                            "type": "string",
+                            "description": "Your step-by-step thinking about the prompt.",
+                        },
+                        "task_description": {
+                            "type": "string",
+                            "description": "A description of the task the prompt is used for.",
+                        },
+                    },
+                    "required": ["analysis", "task_description"],
+                    "additionalProperties": False,
+                },
+            },
+        },
     )
-    output = response.choices[0].message.content
-    task_description = get_xml_content(output, "task_description")
+    output = json_repair.loads(response.choices[0].message.content)
 
-    return task_description, TokenCount(
+    return output["task_description"], TokenCount(
         response.usage.prompt_tokens, response.usage.completion_tokens
     )
 
@@ -153,7 +176,7 @@ async def evaluate_fitness(
                         },
                         "score": {
                             "type": "number",
-                            "description": "A score between 1-10 for the prompt. A lower score indicates a worse prompt, and a higher score a better prompt.",
+                            "description": "A score between 1-10 for the prompt, with 10 being the highest.",
                         },
                     },
                     "required": ["evaluation", "score"],
@@ -200,10 +223,31 @@ async def crossover(
         messages=[system_message, user_message],
         model="gpt-4o",
         temperature=1.0,
+        response_format={
+            "type": "json_schema",
+            "json_schema": {
+                "name": "prompt_crossover_response",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "analysis": {
+                            "type": "string",
+                            "description": "Your step-by-step analysis of the two prompts.",
+                        },
+                        "prompt": {
+                            "type": "string",
+                            "description": "The combined and improved prompt.",
+                        },
+                    },
+                    "required": ["analysis", "prompt"],
+                    "additionalProperties": False,
+                },
+            },
+        },
     )
-    output = response.choices[0].message.content
-    prompt = get_xml_content(output, "combined_prompt")
+    output = json_repair.loads(response.choices[0].message.content)
 
-    return PromptCandidate(prompt), TokenCount(
+    return PromptCandidate(output["prompt"]), TokenCount(
         response.usage.prompt_tokens, response.usage.completion_tokens
     )

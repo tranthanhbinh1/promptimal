@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from typing import Optional
 
 # Local
-# from o100.dtos import TokenCount
-from dtos import TokenCount
+# from promptimal.dtos.TokenCount import TokenCount
+from dtos.TokenCount import TokenCount
 
 
 @dataclass

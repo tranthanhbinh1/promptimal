@@ -2,7 +2,7 @@
 import argparse
 
 # Local
-# from o100.app import App
+# from promptimal.app import App
 from app import App
 
 
@@ -84,7 +84,3 @@ def main():
         )
     else:
         print(f"\n\033[1;31mOptimization loop terminated.\033[0m")
-
-
-if __name__ == "__main__":
-    main()

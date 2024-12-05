@@ -2,9 +2,9 @@
 
 **Promptimal is the fastest way to optimize your prompts and boost performance on AI tasks.**
 
-Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge with self-consistency is used to evaluate the modified prompts, but you can also [define your own evaluator function.](#advanced-usage)
+Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge technique is used to evaluate the modified prompts, but you also have the option to define your own evaluation function.
 
-[Demo]
+[Demo](./demo.gif)
 
 ## Installation
 
@@ -50,7 +50,7 @@ You can control the optimization parameters by passing additional command-line a
 2. `num_samples`: Number of candidate prompts to generate in each iteration. Equivalent to the "population size" in an evolutionary algorithm.
 3. `threshold`: Termination threshold for the loop. If a candidate prompt gets a score higher than this threshold, the optimization loop will stop. Default is 1.0.
 
-You can also define your own evaluator. By default, the
+You can also define your own evaluator. By default, promptimal uses a LLM-as-judge with self-consistency to evaluate prompt candidates. This has pitfalls and isn't as good as
 
 ## Roadmap
 

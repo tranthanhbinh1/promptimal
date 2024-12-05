@@ -2,19 +2,17 @@
 import time
 import asyncio
 import difflib
-from typing import Iterator, List, Literal, Optional, Tuple
+from typing import List, Optional, Tuple
 
 # Third party
 import urwid
 import pyperclip
 
 # Local
-# from o100.optimizer import optimize
-# from o100.dtos import ProgressStep, TokenCount
+# from promptimal.optimizer import optimize
+# from promptimal.dtos import ProgressStep, TokenCount
 from optimizer import optimize
-from dtos import ProgressStep, TokenCount
-
-LINE_BOX_ATTR = "score good"
+from dtos import ProgressStep
 
 
 #########
@@ -365,7 +363,7 @@ class App:
     async def optimize(self, **kwargs):
         async for step in optimize(self.prompt, **kwargs):
             # Update state
-            self.prompt = step.best_prompt
+            self.prompt = step.best_prompt.replace("\\n", "\n")
             self.score = step.best_score
             existing_step = next((s for s in self.steps if s.index == step.index), None)
             if existing_step:

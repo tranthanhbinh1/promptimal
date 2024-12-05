@@ -1,21 +1,21 @@
 # Standard library
-import asyncio
-import time
 import os
+import time
+import asyncio
 from typing import Optional
 
 # Third party
 from openai import AsyncOpenAI
 
 # Local
-# from o100.optimizer.utils import (
+# from promptimal.optimizer.utils import (
 #     crossover,
 #     evaluate_fitness,
 #     init_population,
 #     select_parent,
 #     infer_task_description
 # )
-# from o100.dtos import ProgressStep, PromptCandidate
+# from promptimal.dtos import ProgressStep, PromptCandidate
 from optimizer.utils import (
     crossover,
     evaluate_fitness,
@@ -113,7 +113,7 @@ async def optimize(
         for i, task in enumerate(asyncio.as_completed(tasks)):
             _, _token_count = await task
             token_count += _token_count
-            num_prompts += 1
+            num_prompts += 1 if index > 0 else 0
 
             yield ProgressStep(
                 index=index + 1,
