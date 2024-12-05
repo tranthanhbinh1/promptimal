@@ -50,13 +50,25 @@ You can control the optimization parameters by passing additional command-line a
 2. `num_samples`: Number of candidate prompts to generate in each iteration. Equivalent to the "population size" in an evolutionary algorithm.
 3. `threshold`: Termination threshold for the loop. If a candidate prompt gets a score higher than this threshold, the optimization loop will stop. Default is 1.0.
 
-You can also define your own evaluator. By default, promptimal uses a LLM-as-judge with self-consistency to evaluate prompt candidates. This has pitfalls and isn't as good as
+You can also define your own evaluator. By default, promptimal uses an LLM-as-judge with self-consistency to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset, use a custom prompt for the LLM-as-judge, or some other custom technique. To do this, first create a Python file called `evaluator.py`. Then define your own evaluation function in that file, like so:
+
+```python
+# TODO
+```
+
+Once finished, run promptimal with the following command-line argument:
+
+```bash
+> promptimal --evaluator="path/to/evaluator.py"
+```
+
+This file will effectively act as a command-line tool that promptimal can use to evaluate prompts.
 
 ## Roadmap
 
 1. Support for other LLM providers, like Anthropic, Groq, etc.
-2. Evolve not only the prompts, but the meta-prompts (based on the PromptBreeder paper).
-3. Pre-define mutation operators, like the PromptBreeder paper does.
+2. Evolve not only the prompts, but the meta-prompts (based on the [PromptBreeder paper](https://arxiv.org/pdf/2309.16797)).
+3. Pre-define some mutation operators.
 4. Generate synthetic tests as part of the evaluation process.
 
 **Mission:** Make this the easiest-to-use prompt optimizer in the world.
