@@ -4,7 +4,7 @@
 
 Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge technique is used to evaluate the modified prompts, but you also have the option to define your own evaluation function.
 
-[Demo](./demo.gif)
+![Demo](./demo.gif)
 
 ## Installation
 
