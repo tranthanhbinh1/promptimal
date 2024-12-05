@@ -14,7 +14,7 @@ with open("README.md", encoding="utf-8") as file:
 
 setup(
     name="promptimal",
-    version="1.0.0",
+    version="1.0.1",
     description="A dead-simple prompt optimizer",
     url="https://github.com/shobrook/promptimal",
     author="shobrook",

@@ -1,4 +1,5 @@
 # Standard library
+import os
 import argparse
 
 # Local
@@ -54,6 +55,10 @@ def main():
         help="OpenAI API key.",
     )
     args = parser.parse_args()
+
+    if not os.getenv("OPENAI_API_KEY", None) or args.openai_api_key:
+        print("\033[1;31mOpenAI API key not found.\033[0m")
+        return
 
     init_prompt = (
         input("\033[1;90mInitial prompt (use \\n for newlines):\033[0m\n\n")
