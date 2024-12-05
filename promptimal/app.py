@@ -9,10 +9,11 @@ import urwid
 import pyperclip
 
 # Local
-# from promptimal.optimizer import optimize
-# from promptimal.dtos import ProgressStep, TokenCount
-from optimizer import optimize
-from dtos import ProgressStep
+from promptimal.optimizer import optimize
+from promptimal.dtos import ProgressStep
+
+# from optimizer import optimize
+# from dtos import ProgressStep
 
 
 #########

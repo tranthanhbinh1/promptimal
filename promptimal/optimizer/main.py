@@ -8,22 +8,23 @@ from typing import Optional
 from openai import AsyncOpenAI
 
 # Local
-# from promptimal.optimizer.utils import (
-#     crossover,
-#     evaluate_fitness,
-#     init_population,
-#     select_parent,
-#     infer_task_description
-# )
-# from promptimal.dtos import ProgressStep, PromptCandidate
-from optimizer.utils import (
+from promptimal.optimizer.utils import (
     crossover,
     evaluate_fitness,
     init_population,
     select_parent,
     infer_task_description,
 )
-from dtos import ProgressStep, PromptCandidate
+from promptimal.dtos import ProgressStep, PromptCandidate
+
+# from optimizer.utils import (
+#     crossover,
+#     evaluate_fitness,
+#     init_population,
+#     select_parent,
+#     infer_task_description,
+# )
+# from dtos import ProgressStep, PromptCandidate
 
 
 async def optimize(

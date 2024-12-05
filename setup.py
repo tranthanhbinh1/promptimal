@@ -23,8 +23,7 @@ setup(
     include_package_data=True,
     packages=["promptimal"],
     entry_points={"console_scripts": ["promptimal = promptimal.promptimal:main"]},
-    # install_requires=["pystache"],
-    requires=["json-repair", "pyperclip", "openai", "urwid"],
+    install_requires=["json-repair", "pyperclip", "openai", "urwid"],
     python_requires=">=3",
     license="MIT",
 )

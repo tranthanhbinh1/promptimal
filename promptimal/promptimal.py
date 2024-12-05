@@ -2,8 +2,9 @@
 import argparse
 
 # Local
-# from promptimal.app import App
-from app import App
+from promptimal.app import App
+
+# from app import App
 
 
 def main():
