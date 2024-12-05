@@ -1,12 +1,62 @@
-# o100
+# promptimal
 
-**o100 is a simple command-line tool for optimizing your prompts.**
+**Promptimal is the fastest way to optimize your prompts and boost performance on AI tasks.**
 
-It generates and uses synthetic tests to evaluate prompts and iteratively improve them. All you have to do is supply the prompt you want to optimize and a description of the task. o100 will then execute the following loop:
+Promptimal automatically refines your prompt for a specific task. **It doesn't require a dataset** –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge with self-consistency is used to evaluate the modified prompts, but you can also define your own evaluator function.
 
-1. An _optimizer LLM_ will use a LLM to generate candidates for a better prompt
-2. An _evaluator LLM_ will generate synthetic tests (example I/O pairs) and use them to score each candidate
-3. The top-k prompts and their scores are picked and used as context for the optimizer LLM to generate another round of candidates
-4. This process is repeated until some termination threshold is reached
+[Demo]
 
-Using o100 is dead simple. It takes less than 30 seconds to start optimizing a prompt.
+## Installation
+
+```bash
+> pip install -U promptimal
+```
+
+## Quickstart
+
+First, make sure you have your OpenAI API key added to your environment:
+
+```bash
+> export OPENAI_API_KEY="key_goes_here"
+```
+
+Then, run the tool from the command-line:
+
+```bash
+> promptimal
+```
+
+You'll be asked to input your task description and initial prompt. Alternatively, you can specify these inputs as command-line arguments:
+
+```bash
+> promptimal \
+    --prompt "Does this movie review contain a spoiler? answer Yes or No" \
+    --task_description "Assistant is an expert classifier that will classify a movie review, and let the user know if it contains a spoiler for the reviewed movie or not."
+```
+
+Once you're done, a UI will open in your terminal for monitoring the optimization process:
+
+[Image]
+
+## Advanced usage
+
+You can control some of the optimization parameters by passing additional command-line arguments:
+
+```bash
+> promptimal --num_iters=10 --num_samples=20 --threshold=0.7
+```
+
+1. `num_iters`: Number of iterations to run the optimization loop for. Equivalent to the number of "generations" in an evolutionary algorithm.
+2. `num_samples`: Number of candidate prompts to generate in each iteration. Equivalent to the "population size" in an evolutionary algorithm.
+3. `threshold`: Termination threshold for the loop. If a candidate prompt gets a score higher than this threshold, the optimization loop will stop. Default is 1.0.
+
+You can also define your own evaluator.
+
+## Roadmap
+
+1. Support for other LLM providers, like Anthropic, Groq, etc.
+2. Evolve not only the prompts, but the meta-prompts (based on the PromptBreeder paper).
+3. Pre-define mutation operators, like the PromptBreeder paper does.
+4. Generate synthetic tests as part of the evaluation process.
+
+**Mission:** Make this the easiest-to-use prompt optimizer in the world.
