@@ -5,10 +5,11 @@ import subprocess
 from typing import Optional, Tuple
 
 # Local
-# from promptimal.app import App
-# from promptimal.dtos import PromptCandidate, TokenCount
-from app import App
-from dtos import PromptCandidate, TokenCount
+from promptimal.app import App
+from promptimal.dtos import PromptCandidate, TokenCount
+
+# from app import App
+# from dtos import PromptCandidate, TokenCount
 
 
 #########

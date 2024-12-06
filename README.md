@@ -40,6 +40,8 @@ Once you're done, a UI will open in your terminal for monitoring the optimizatio
 
 ## Advanced usage
 
+### Hyperparameters
+
 You can control the optimization parameters by passing additional command-line arguments:
 
 ```bash
@@ -50,13 +52,16 @@ You can control the optimization parameters by passing additional command-line a
 2. `num_samples`: Number of candidate prompts to generate in each iteration. Equivalent to the "population size" in an evolutionary algorithm.
 3. `threshold`: Termination threshold for the loop. If a candidate prompt gets a score higher than this threshold, the optimization loop will stop. Default is 1.0.
 
-You can also define your own evaluator. By default, promptimal uses an LLM-as-judge with self-consistency to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset, use a custom prompt for the LLM-as-judge, or some other custom technique. To do this, first create a Python file called `evaluator.py`. Then define your own evaluation function in that file, like so:
+### Custom evaluators
+
+By default, promptimal uses an LLM-as-judge with self-consistency to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset or use some other evaluation technique. To do this, first create a Python file called `evaluator.py`. Then define your own evaluation function in that file, like so:
 
 ```python
 import argparse
 
 def evaluator(prompt: str) -> float:
     # Your code goes here
+    # Must return value between 0 and 1
 
 def main():
     parser = argparse.ArgumentParser()
@@ -76,7 +81,7 @@ Once finished, run promptimal with the following command-line argument:
 > promptimal --evaluator="path/to/evaluator.py"
 ```
 
-This file will effectively act as a command-line tool that promptimal can use to evaluate prompts.
+This file will serve as a script that promptimal can use to evaluate prompts.
 
 ## Roadmap
 

@@ -9,20 +9,21 @@ import json_repair
 from openai import AsyncOpenAI
 
 # Local
-# from promptimal.dtos import PromptCandidate, TokenCount
-# from promptimal.optimizer.prompts import (
-#     INIT_POPULATION_PROMPT,
-#     EVAL_PROMPT,
-#     CROSSOVER_PROMPT,
-#     INFER_TASK_PROMPT,
-# )
-from dtos import PromptCandidate, TokenCount
-from optimizer.prompts import (
-    INFER_TASK_PROMPT,
+from promptimal.dtos import PromptCandidate, TokenCount
+from promptimal.optimizer.prompts import (
     INIT_POPULATION_PROMPT,
     EVAL_PROMPT,
     CROSSOVER_PROMPT,
+    INFER_TASK_PROMPT,
 )
+
+# from dtos import PromptCandidate, TokenCount
+# from optimizer.prompts import (
+#     INFER_TASK_PROMPT,
+#     INIT_POPULATION_PROMPT,
+#     EVAL_PROMPT,
+#     CROSSOVER_PROMPT,
+# )
 
 
 def get_xml_content(output: str, tag: str) -> str:

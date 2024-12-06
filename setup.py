@@ -1,5 +1,5 @@
 try:
-    from setuptools import setup
+    from setuptools import setup, find_packages
 except ImportError:
     from distutils.core import setup
 from codecs import open
@@ -14,14 +14,14 @@ with open("README.md", encoding="utf-8") as file:
 
 setup(
     name="promptimal",
-    version="1.0.1",
+    version="1.0.2",
     description="A dead-simple prompt optimizer",
     url="https://github.com/shobrook/promptimal",
     author="shobrook",
     author_email="shobrookj@gmail.com",
     keywords="prompt optimizer openai prompt-tuning prompt-engineering prompt-optimization genetic-algorithms",
     include_package_data=True,
-    packages=["promptimal"],
+    packages=find_packages(),
     entry_points={"console_scripts": ["promptimal = promptimal.promptimal:main"]},
     install_requires=["json-repair", "pyperclip", "openai", "urwid"],
     python_requires=">=3",
