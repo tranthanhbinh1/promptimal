@@ -1,8 +1,8 @@
 # promptimal
 
-**Promptimal is the fastest way to optimize your prompts and boost performance on AI tasks.**
+**CLI for quickly improving your AI prompts. No dataset needed.**
 
-Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge approach is used to evaluate the modified prompts, but you also have the option to define your own evaluation function.
+Just submit your prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. An LLM evaluates the modified prompts to guide the process, but you can also define your own evaluation function.
 
 ![Demo](./assets/demo.gif)
 
@@ -12,15 +12,15 @@ Promptimal automatically refines your prompt for a specific task. _It doesn't re
 > pipx install promptimal
 ```
 
-## Quickstart
-
-First, make sure you have your OpenAI API key added to your environment:
+Once installed, make sure you have your OpenAI API key added to your environment:
 
 ```bash
-> export OPENAI_API_KEY="key_goes_here"
+> export OPENAI_API_KEY="..."
 ```
 
-Then, run the tool from the command-line:
+## Quickstart
+
+Start the tool from your terminal:
 
 ```bash
 > promptimal
@@ -54,7 +54,7 @@ You can control the optimization parameters by passing additional command-line a
 
 ### Custom evaluators
 
-By default, promptimal uses an LLM-as-judge with self-consistency to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset or use some other evaluation technique. To do this, first create a Python file called `evaluator.py`. Then define your own evaluation function in that file, like so:
+By default, promptimal uses an LLM-as-judge approach with self-consistency to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset or use some other evaluation technique. To do this, first create a Python file called `evaluator.py`. Then define your own evaluation function in that file, like so:
 
 ```python
 import argparse
@@ -75,13 +75,13 @@ if __name__ == "__main__":
     main()
 ```
 
-Once finished, run promptimal with the following command-line argument:
+Once finished, specify the path to `evaluator.py` when you run promptimal:
 
 ```bash
 > promptimal --evaluator="path/to/evaluator.py"
 ```
 
-This file will serve as a script that promptimal can use to evaluate prompts.
+This file will effectively serve as a script that promptimal can use to evaluate prompts.
 
 ## Roadmap
 
