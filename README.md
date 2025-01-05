@@ -1,8 +1,8 @@
 # promptimal
 
-**Promptimal is the fastest way to optimize your prompts and boost performance on AI tasks.**
+**CLI for quickly improving your AI prompts. No dataset needed.**
 
-Promptimal automatically refines your prompt for a specific task. _It doesn't require a dataset_ –– all you need is an initial prompt and a description of the task it's used for. Promptimal will then use a genetic algorithm to iteratively modify the prompt until it's better than the original. Behind the scenes, an LLM-as-judge approach is used to evaluate the modified prompts, but you also have the option to define your own evaluation function.
+Just submit your prompt and a description of what you want to improve. Promptimal will then use a genetic algorithm to iteratively refine the prompt until it's better than the original. An LLM evaluates the modified prompts to guide the process, but you can also define your own evaluation function.
 
 ![Demo](./assets/demo.gif)
 
@@ -12,26 +12,26 @@ Promptimal automatically refines your prompt for a specific task. _It doesn't re
 > pipx install promptimal
 ```
 
-## Quickstart
-
-First, make sure you have your OpenAI API key added to your environment:
+Once installed, make sure you have your OpenAI API key added to your environment:
 
 ```bash
-> export OPENAI_API_KEY="key_goes_here"
+> export OPENAI_API_KEY="..."
 ```
 
-Then, run the tool from the command-line:
+## Quickstart
+
+Open the tool from your terminal:
 
 ```bash
 > promptimal
 ```
 
-You'll be asked to input your task description and initial prompt. Alternatively, you can specify these inputs as command-line arguments:
+You'll be asked to input your initial prompt and what you want to improve. Alternatively, you can specify these inputs as command-line arguments:
 
 ```bash
 > promptimal \
     --prompt "You will be provided with a piece of code, and your task is to explain it in a concise way." \
-    --task_description "The goal is to generate a summary of a code snippet which will then be embedded and used for vector search."
+    --improve "Summaries need to include less code references and be more high-level."
 ```
 
 Once you're done, a UI will open in your terminal for monitoring the optimization process:
@@ -54,7 +54,7 @@ You can control the optimization parameters by passing additional command-line a
 
 ### Custom evaluators
 
-By default, promptimal uses an LLM-as-judge with self-consistency to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset or use some other evaluation technique. To do this, first create a Python file called `evaluator.py`. Then define your own evaluation function in that file, like so:
+By default, promptimal uses an LLM-as-judge approach (with self-consistency) to evaluate prompt candidates. But to boost performance, you may want to evaluate prompts against a dataset or use some other evaluation technique. To do this, first create a Python file called `evaluator.py`. Then copy/paste the code below into that file and define your own evaluation function:
 
 ```python
 import argparse
@@ -75,17 +75,17 @@ if __name__ == "__main__":
     main()
 ```
 
-Once finished, run promptimal with the following command-line argument:
+Once finished, specify the path to `evaluator.py` when you run promptimal:
 
 ```bash
 > promptimal --evaluator="path/to/evaluator.py"
 ```
 
-This file will serve as a script that promptimal can use to evaluate prompts.
+This file will effectively serve as a script that promptimal uses to evaluate prompts.
 
 ## Roadmap
 
-1. Support for other LLM providers, like Anthropic, Groq, etc.
+1. Support for other LLM providers, like Anthropic, Groq, etc. And ollama for local models.
 2. Evolve not only the prompts, but the meta-prompts (based on the [PromptBreeder paper](https://arxiv.org/pdf/2309.16797)).
 3. Pre-define some mutation operators.
 4. Generate synthetic tests as part of the evaluation process.
