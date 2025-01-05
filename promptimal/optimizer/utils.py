@@ -2,85 +2,31 @@
 import json
 import random
 from statistics import mean
-from typing import List, Optional, Tuple
+from typing import List, Tuple
 
 # Third party
 import json_repair
 from openai import AsyncOpenAI
 
 # Local
-from promptimal.dtos import PromptCandidate, TokenCount
-from promptimal.optimizer.prompts import (
-    INIT_POPULATION_PROMPT,
-    EVAL_PROMPT,
-    CROSSOVER_PROMPT,
-    INFER_TASK_PROMPT,
-)
-
-# from dtos import PromptCandidate, TokenCount
-# from optimizer.prompts import (
-#     INFER_TASK_PROMPT,
-#     INIT_POPULATION_PROMPT,
-#     EVAL_PROMPT,
-#     CROSSOVER_PROMPT,
-# )
-
-
-def get_xml_content(output: str, tag: str) -> str:
-    start = output.find(f"<{tag}>") + len(f"<{tag}>")
-    end = output.find(f"</{tag}>")
-    end = end if end != -1 else len(output)
-    content = output[start:end].strip()
-    return content
-
-
-async def infer_task_description(
-    prompt: str, task_description: Optional[str], openai: AsyncOpenAI
-) -> Tuple[str, TokenCount]:
-    if task_description.strip():
-        return task_description, TokenCount(0, 0)
-
-    system_message = {"role": "system", "content": INFER_TASK_PROMPT}
-    user_message = {
-        "role": "user",
-        "content": f"Describe the task that the following prompt is used for:\n\n<prompt>\n{prompt}\n</prompt>",
-    }
-    response = await openai.chat.completions.create(
-        messages=[system_message, user_message],
-        model="gpt-4o",
-        temperature=1.0,
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "describe_task_response",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "analysis": {
-                            "type": "string",
-                            "description": "Your step-by-step thinking about the prompt.",
-                        },
-                        "task_description": {
-                            "type": "string",
-                            "description": "A description of the task the prompt is used for.",
-                        },
-                    },
-                    "required": ["analysis", "task_description"],
-                    "additionalProperties": False,
-                },
-            },
-        },
+try:
+    from promptimal.dtos import PromptCandidate, TokenCount
+    from promptimal.optimizer.prompts import (
+        INIT_POPULATION_PROMPT,
+        EVAL_PROMPT,
+        CROSSOVER_PROMPT,
     )
-    output = json_repair.loads(response.choices[0].message.content)
-
-    return output["task_description"], TokenCount(
-        response.usage.prompt_tokens, response.usage.completion_tokens
+except ImportError:
+    from dtos import PromptCandidate, TokenCount
+    from optimizer.prompts import (
+        INIT_POPULATION_PROMPT,
+        EVAL_PROMPT,
+        CROSSOVER_PROMPT,
     )
 
 
 async def init_population(
-    prompt: str, task_description: str, population_size: int, openai: AsyncOpenAI
+    prompt: str, improvement_request: str, population_size: int, openai: AsyncOpenAI
 ) -> Tuple[List[PromptCandidate], TokenCount]:
     """
     Initializes a population of candidate prompts.
@@ -89,7 +35,7 @@ async def init_population(
     system_message = {
         "role": "system",
         "content": INIT_POPULATION_PROMPT.format(
-            population_size=population_size, task_description=task_description
+            population_size=population_size, improvement_request=improvement_request
         ),
     }
     user_message = {
@@ -134,8 +80,8 @@ async def init_population(
 
 async def evaluate_fitness(
     candidate: PromptCandidate,
-    task_description: str,
     initial_prompt: PromptCandidate,
+    improvement_request: str,
     openai: AsyncOpenAI,
     num_samples=5,
 ) -> Tuple[PromptCandidate, TokenCount]:
@@ -152,19 +98,25 @@ async def evaluate_fitness(
         messages=[
             {
                 "role": "system",
-                "content": EVAL_PROMPT.format(task_description=task_description),
-            },
-            {"role": "user", "content": initial_prompt.prompt},
-            {
-                "role": "assistant",
-                "content": json.dumps(
-                    {
-                        "evaluation": initial_prompt.reflection,
-                        "score": initial_prompt.fitness,
-                    }
+                "content": EVAL_PROMPT.format(
+                    initial_prompt=initial_prompt,
+                    improvement_request=improvement_request,
                 ),
             },
-            {"role": "user", "content": candidate.prompt},
+            # {"role": "user", "content": initial_prompt.prompt},
+            # {
+            #     "role": "assistant",
+            #     "content": json.dumps(
+            #         {
+            #             "evaluation": initial_prompt.reflection,
+            #             "score": initial_prompt.fitness,
+            #         }
+            #     ),
+            # },
+            {
+                "role": "user",
+                "content": f"Evaluate the following prompt:\n\n<prompt>\n{candidate.prompt}\n</prompt>",
+            },
         ],
         model="gpt-4o",
         temperature=1.0,
@@ -214,12 +166,15 @@ def select_parent(
 async def crossover(
     parent1: PromptCandidate,
     parent2: PromptCandidate,
-    task_description: str,
+    initial_prompt: str,
+    improvement_request: str,
     openai: AsyncOpenAI,
 ) -> Tuple[PromptCandidate, TokenCount]:
     system_message = {
         "role": "system",
-        "content": CROSSOVER_PROMPT.format(task_description=task_description),
+        "content": CROSSOVER_PROMPT.format(
+            initial_prompt=initial_prompt, improvement_request=improvement_request
+        ),
     }
     user_message = {
         "role": "user",

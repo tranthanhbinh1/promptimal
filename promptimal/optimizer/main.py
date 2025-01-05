@@ -8,28 +8,27 @@ from typing import Optional
 from openai import AsyncOpenAI
 
 # Local
-from promptimal.optimizer.utils import (
-    crossover,
-    evaluate_fitness,
-    init_population,
-    select_parent,
-    infer_task_description,
-)
-from promptimal.dtos import ProgressStep, PromptCandidate
-
-# from optimizer.utils import (
-#     crossover,
-#     evaluate_fitness,
-#     init_population,
-#     select_parent,
-#     infer_task_description,
-# )
-# from dtos import ProgressStep, PromptCandidate
+try:
+    from promptimal.optimizer.utils import (
+        crossover,
+        evaluate_fitness,
+        init_population,
+        select_parent,
+    )
+    from promptimal.dtos import ProgressStep, PromptCandidate, TokenCount
+except ImportError:
+    from optimizer.utils import (
+        crossover,
+        evaluate_fitness,
+        init_population,
+        select_parent,
+    )
+    from dtos import ProgressStep, PromptCandidate, TokenCount
 
 
 async def optimize(
     prompt: str,  # First version of the prompt
-    task_description: Optional[str] = None,  # Description of task prompt is used for
+    improvement_request: Optional[str] = None,  # Description of what to improve
     population_size: int = 5,  # No. of candidates to generate per iteration
     num_iters: int = 5,  # Max. no. of population "generations"
     num_elites: int = 2,  # No. of top candidates to pass onto the next generation
@@ -42,9 +41,7 @@ async def optimize(
     start_time = time.time()
 
     best_candidate = initial_prompt = PromptCandidate(prompt)
-    task_description, token_count = await infer_task_description(
-        prompt, task_description, openai
-    )
+    token_count = TokenCount(0, 0)
 
     yield ProgressStep(
         index=0,
@@ -56,7 +53,7 @@ async def optimize(
     )
 
     population, _token_count = await init_population(
-        prompt, task_description, population_size, openai
+        prompt, improvement_request, population_size, openai
     )
     token_count += _token_count
     num_prompts = 0
@@ -71,7 +68,7 @@ async def optimize(
     )
 
     tasks = [
-        evaluate(candidate, task_description, initial_prompt, openai)
+        evaluate(candidate, improvement_request, initial_prompt, openai)
         for candidate in population
     ]
     for index, task in enumerate(asyncio.as_completed(tasks)):
@@ -110,7 +107,7 @@ async def optimize(
 
         # Evaluate fitness of each candidate
         tasks = [
-            evaluate(candidate, task_description, initial_prompt, openai)
+            evaluate(candidate, initial_prompt, improvement_request, openai)
             for candidate in population
         ]
         for i, task in enumerate(asyncio.as_completed(tasks)):
@@ -161,7 +158,12 @@ async def optimize(
             for _ in range(population_size - num_elites)
         )
         tasks = [
-            crossover(*parents, task_description=task_description, openai=openai)
+            crossover(
+                *parents,
+                initial_prompt=prompt,
+                improvement_request=improvement_request,
+                openai=openai,
+            )
             for parents in mates
         ]
         children = []

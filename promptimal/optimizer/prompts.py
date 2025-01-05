@@ -1,24 +1,10 @@
 # Prompts inspired by https://github.com/hinthornw/promptimizer and the PromptBreeder paper
 
-INFER_TASK_PROMPT = """
-Your job is to figure out what task an AI prompt is used for. You should think step-by-step about the prompt and generate a description of the task it is most likely used for.
+INIT_POPULATION_PROMPT = """You are an expert AI prompt engineer. You will be given a prompt and your job is to come up with {population_size} better prompts. The user wants to improve the following about the given prompt:
 
-In your head, figure out the task step-by-step:
-1. Analyze the prompt and identify possible tasks it could be used for.
-2. Consider what tasks are best suited for LLMs and what tasks are not.
-3. Think about the type of input and output that the prompt is asking for.
-4. Finally, describe a task that the prompt is most likely used for.
-
-The task description must be clear and concise. Do NOT include any unnecessary information.
-
-Output both your step-by-step analysis and the task description."""
-
-INIT_POPULATION_PROMPT = """
-You are an expert prompt engineer. You will be given a prompt and your job is to come up with {population_size} better prompts for the following AI task:
-
-<task>
-{task_description}
-</task>
+<improvement_request>
+{improvement_request}
+</improvement_request>
 
 Each prompt you generate should employ a different strategy to improve the initial prompt.
 
@@ -33,14 +19,21 @@ Your improved prompts must:
 
 You MUST generate {population_size} prompts that are better than the provided prompt."""
 
-CROSSOVER_PROMPT = """
-You are an expert prompt engineer. Your job is to combine elements from two prompts to create a new prompt for the following AI task:
+CROSSOVER_PROMPT = """You are an expert AI prompt engineer tasked with improving the following prompt:
 
-<task>
-{task_description}
-</task>
+<initial_prompt>
+{initial_prompt}
+</initial_prompt>
 
-The goal is to create a prompt that is better than either of the original prompts.
+The user would like to improve the following about the prompt:
+
+<improvement_request>
+{improvement_request}
+</improvement_request>
+
+Using this information above, your job is to generate a better prompt by combining elements from two prompts that are known to be successful.
+
+The goal is to create a prompt that is better than either of the original prompts, while still staying true to the intent of the initial prompt and the improvement request.
 
 In your head, plan the optimization step-by-step:
 1. Analyze the two prompts and where they fall short.
@@ -58,12 +51,19 @@ The improved prompt must:
 
 Output both your step-by-step analysis and the improved prompt."""
 
-EVAL_PROMPT = """
-You are an expert prompt engineer. Your job is to evaluate a prompt for the following AI task:
+EVAL_PROMPT = """You are an expert AI prompt engineer tasked with improving the following prompt:
 
-<task>
-{task_description}
-</task>
+<initial_prompt>
+{initial_prompt}
+</initial_prompt>
+
+The user would like to improve the following about the prompt:
+
+<improvement_request>
+{improvement_request}
+</improvement_request>
+
+Using this information above, your job is to evaluate a potentially improved prompt given to you.
 
 You should grade the prompt in the following categories:
 - **Clarity:** Precisely defines the task with unambiguous language.

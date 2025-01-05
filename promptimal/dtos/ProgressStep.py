@@ -3,9 +3,10 @@ from dataclasses import dataclass
 from typing import Optional
 
 # Local
-from promptimal.dtos.TokenCount import TokenCount
-
-# from dtos.TokenCount import TokenCount
+try:
+    from promptimal.dtos.TokenCount import TokenCount
+except ImportError:
+    from dtos.TokenCount import TokenCount
 
 
 @dataclass

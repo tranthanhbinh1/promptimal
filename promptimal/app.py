@@ -9,11 +9,12 @@ import urwid
 import pyperclip
 
 # Local
-from promptimal.optimizer import optimize
-from promptimal.dtos import ProgressStep
-
-# from optimizer import optimize
-# from dtos import ProgressStep
+try:
+    from promptimal.optimizer import optimize
+    from promptimal.dtos import ProgressStep
+except ImportError:
+    from optimizer import optimize
+    from dtos import ProgressStep
 
 
 #########

@@ -5,11 +5,12 @@ import subprocess
 from typing import Optional, Tuple
 
 # Local
-from promptimal.app import App
-from promptimal.dtos import PromptCandidate, TokenCount
-
-# from app import App
-# from dtos import PromptCandidate, TokenCount
+try:
+    from promptimal.app import App
+    from promptimal.dtos import PromptCandidate, TokenCount
+except ImportError:
+    from app import App
+    from dtos import PromptCandidate, TokenCount
 
 
 #########
@@ -56,11 +57,11 @@ def main():
         help="Initial prompt to optimize.",
     )
     parser.add_argument(
-        "--task_description",
+        "--improve",
         default="",
         required=False,
         type=str,
-        help="Description of the task the prompt is used for. Optional.",
+        help="Description of what you want to improve about the prompt.",
     )
     parser.add_argument(
         "--num_iters",
@@ -108,15 +109,15 @@ def main():
         if not args.prompt
         else args.prompt
     ).replace("\\n", "\n")
-    task_description = (
-        input("\n\033[1;90mDescribe the task (optional):\033[0m\n\n")
-        if not args.task_description
-        else args.task_description
+    improvement_request = (
+        input("\n\033[1;90mWhat do you want to improve:\033[0m\n\n")
+        if not args.improve
+        else args.improve
     ).replace("\\n", "\n")
 
     app = App(init_prompt)
     optimized_prompt, is_finished = app.start(
-        task_description=task_description,
+        improvement_request=improvement_request,
         num_iters=args.num_iters,
         population_size=args.num_samples,
         threshold=args.threshold,
@@ -126,8 +127,10 @@ def main():
 
     if args.prompt:
         print(f"\033[1;90mInitial prompt:\033[0m\n\n{init_prompt}")
-    if args.task_description:
-        print(f"\n\033[1;90mDescribe the task:\033[0m\n\n{task_description}")
+    if args.improve:
+        print(
+            f"\n\033[1;90mWhat do you want to improve:\033[0m\n\n{improvement_request}"
+        )
     if is_finished:
         print(
             f"\n🧬 \033[1;35mOPTIMIZED PROMPT\033[0m 🧬\n\n\033[35m{optimized_prompt}\033[0m"
