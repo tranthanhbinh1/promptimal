@@ -85,11 +85,11 @@ def main():
         help="Score threshold to stop the optimization loop.",
     )
     parser.add_argument(
-        "--openai_api_key",
+        "--google_ai_api_key",
         default="",
         required=False,
         type=str,
-        help="OpenAI API key.",
+        help="Google AI API key.",
     )
     parser.add_argument(
         "--evaluator",
@@ -100,9 +100,9 @@ def main():
     )
     args = parser.parse_args()
 
-    if not os.getenv("OPENAI_API_KEY", None) or args.openai_api_key:
-        print("\033[1;31mOpenAI API key not found.\033[0m")
-        return
+    # if not os.getenv("OPENAI_API_KEY", None) or args.openai_api_key:
+    #     print("\033[1;31mOpenAI API key not found.\033[0m")
+    #     return
 
     init_prompt = (
         input("\033[1;90mInitial prompt (use \\n for newlines):\033[0m\n\n")
@@ -121,7 +121,7 @@ def main():
         num_iters=args.num_iters,
         population_size=args.num_samples,
         threshold=args.threshold,
-        api_key=args.openai_api_key,
+        api_key=args.google_ai_api_key,
         evaluator=generate_evaluator(args.evaluator),
     )
 

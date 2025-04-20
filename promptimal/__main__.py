@@ -1,6 +1,6 @@
 # Local
 try:
-    from promptimal import main
+    from promptimal.promptimal import main
 except ImportError:
     from . import main
 
