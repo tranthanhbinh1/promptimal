@@ -1,7 +1,6 @@
 import random
 from statistics import mean
 from typing import List, Tuple
-from openai import AsyncOpenAI
 import instructor
 from pydantic import BaseModel, Field
 
