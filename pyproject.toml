@@ -1,0 +1,18 @@
+[project]
+name = "promptimal"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "google-genai>=1.11.0",
+    "instructor>=1.7.9",
+    "jsonref>=1.1.0",
+    "openai>=1.75.0",
+    "prompt-toolkit>=3.0.51",
+    "pyperclip>=1.9.0",
+    "tqdm>=4.67.1",
+    "typing-extensions>=4.13.2",
+    "urwid>=2.6.16",
+    "wcwidth>=0.2.13",
+]

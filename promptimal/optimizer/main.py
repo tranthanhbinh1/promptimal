@@ -5,7 +5,7 @@ import asyncio
 from typing import Optional
 
 # Third party
-from openai import AsyncOpenAI
+from google.genai import Client
 
 # Local
 try:
@@ -37,7 +37,7 @@ async def optimize(
     evaluator: Optional[callable] = None,
 ):
     evaluate = evaluate_fitness if not evaluator else evaluator
-    openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY", api_key))
+    genai = Client(api_key=os.getenv("GOOGLE_AI_API_KEY", api_key))
     start_time = time.time()
 
     best_candidate = initial_prompt = PromptCandidate(prompt)
@@ -53,7 +53,7 @@ async def optimize(
     )
 
     population, _token_count = await init_population(
-        prompt, improvement_request, population_size, openai
+        prompt, improvement_request, population_size, genai
     )
     token_count += _token_count
     num_prompts = 0
@@ -68,7 +68,7 @@ async def optimize(
     )
 
     tasks = [
-        evaluate(candidate, improvement_request, initial_prompt, openai)
+        evaluate(candidate, improvement_request, initial_prompt, genai)
         for candidate in population
     ]
     for index, task in enumerate(asyncio.as_completed(tasks)):
@@ -107,7 +107,7 @@ async def optimize(
 
         # Evaluate fitness of each candidate
         tasks = [
-            evaluate(candidate, initial_prompt, improvement_request, openai)
+            evaluate(candidate, initial_prompt, improvement_request, genai)
             for candidate in population
         ]
         for i, task in enumerate(asyncio.as_completed(tasks)):
@@ -162,7 +162,7 @@ async def optimize(
                 *parents,
                 initial_prompt=prompt,
                 improvement_request=improvement_request,
-                openai=openai,
+                genai=genai,
             )
             for parents in mates
         ]
