@@ -50,7 +50,7 @@ async def init_population(
     Initializes a population of candidate prompts.
     """
     # Create a patched client with instructor
-    client = instructor.from_genai(genai)
+    client = instructor.from_genai(genai, use_async=True)
 
     system_message = {
         "role": "system",
@@ -102,7 +102,7 @@ async def evaluate_fitness(
         return candidate, TokenCount(0, 0)
 
     # Create a patched client with instructor
-    client = instructor.from_genai(genai)
+    client = instructor.from_genai(genai, use_async=True)
 
     # Generate `n_samples` self-evaluations
     messages = [
@@ -163,7 +163,7 @@ async def crossover(
     genai: genai.Client,
 ) -> Tuple[PromptCandidate, TokenCount]:
     # Create a patched client with instructor
-    client = instructor.from_genai(genai)
+    client = instructor.from_genai(genai, use_async=True)
 
     system_message = {
         "role": "system",
