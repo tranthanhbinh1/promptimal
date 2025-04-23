@@ -2,7 +2,7 @@
 import os
 import argparse
 import subprocess
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Callable
 
 # Local
 try:
@@ -18,9 +18,17 @@ except ImportError:
 #########
 
 
-def generate_evaluator(evaluator_path: Optional[str]) -> Optional[callable]:
+def generate_evaluator(
+    evaluator_path: Optional[str], evaluator_python_path: Optional[str]
+) -> Optional[Callable]:
     if not evaluator_path:
         return None
+
+    if not evaluator_python_path:
+        # Fallback to current Python interpreter if not specified
+        import sys
+
+        evaluator_python_path = sys.executable
 
     async def evaluator(
         candidate: PromptCandidate, *args
@@ -28,13 +36,63 @@ def generate_evaluator(evaluator_path: Optional[str]) -> Optional[callable]:
         if candidate.fitness != None:
             return candidate, TokenCount(0, 0)
 
-        result = subprocess.run(
-            ["python", evaluator_path, "--prompt", candidate.prompt],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        candidate.fitness = float(result.stdout.strip())
+        try:
+            print("\n" + "=" * 50)
+            print(f"Running evaluator with prompt:\n{candidate.prompt}")
+            print("=" * 50)
+
+            result = subprocess.run(
+                [
+                    str(evaluator_python_path),
+                    str(evaluator_path),
+                    "--prompt",
+                    candidate.prompt,
+                ],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+
+            # Always print stdout if there is any
+            if result.stdout:
+                print("\nEvaluator stdout:")
+                print("-" * 20)
+                print(result.stdout.strip())
+
+            # Always print stderr if there is any
+            if result.stderr:
+                print("\nEvaluator stderr:")
+                print("-" * 20)
+                print(result.stderr.strip())
+
+            if result.returncode != 0:
+                print(f"\nEvaluator failed with return code: {result.returncode}")
+                candidate.fitness = 0.0
+            else:
+                # Get the last non-empty line from stdout
+                output_lines = [
+                    line.strip() for line in result.stdout.split("\n") if line.strip()
+                ]
+                if not output_lines:
+                    print("\nNo output from evaluator")
+                    candidate.fitness = 0.0
+                else:
+                    try:
+                        # Try to convert the last line to float
+                        candidate.fitness = float(output_lines[-1])
+                        print(f"\nExtracted fitness score: {candidate.fitness}")
+                    except ValueError:
+                        print(
+                            f"\nCould not convert evaluator output to float: {output_lines[-1]}"
+                        )
+                        candidate.fitness = 0.0
+
+            print("=" * 50 + "\n")
+
+        except Exception as e:
+            print(f"Exception in evaluator: {str(e)}")
+            candidate.fitness = 0.0
+
         return candidate, TokenCount(0, 0)
 
     return evaluator
@@ -72,7 +130,7 @@ def main():
     )
     parser.add_argument(
         "--num_samples",
-        default=10,
+        default=2,
         required=False,
         type=int,
         help="Number of prompts to generate in each iteration.",
@@ -98,6 +156,13 @@ def main():
         type=str,
         help="Path to your custom evaluator script.",
     )
+    parser.add_argument(
+        "--evaluator_python_path",
+        default="",
+        required=False,
+        type=str,
+        help="Path to the Python interpreter to use for the evaluator script (e.g. /path/to/venv/bin/python).",
+    )
     args = parser.parse_args()
 
     # if not os.getenv("OPENAI_API_KEY", None) or args.openai_api_key:
@@ -122,7 +187,7 @@ def main():
         population_size=args.num_samples,
         threshold=args.threshold,
         api_key=args.google_ai_api_key,
-        evaluator=generate_evaluator(args.evaluator),
+        evaluator=generate_evaluator(args.evaluator, args.evaluator_python_path),
     )
 
     if args.prompt:
