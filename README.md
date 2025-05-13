@@ -83,6 +83,15 @@ Once finished, specify the path to `evaluator.py` when you run promptimal:
 
 This file will effectively serve as a script that promptimal uses to evaluate prompts.
 
+### Example usage
+```bash
+> python -m promptimal.__main__ \        
+--prompt "Diễn đạt lại câu văn được cung cấp." \
+--improve "Cần cung cấp nhiều lựa chọn diễn đạt lại (khoảng 3-5 phương án), đảm bảo các câu mới tự nhiên, đa dạng (về từ ngữ, cấu trúc) và giữ nguyên hoàn toàn ý nghĩa của câu gốc." \
+--evaluator /home/tb24/projects/llm-data-aug/run_evaluation.py \
+--evaluator_python_path /home/tb24/projects/llm-data-aug/.venv/bin/python
+```
+
 ## Roadmap
 
 1. Support for other LLM providers, like Anthropic, Groq, etc. And ollama for local models.

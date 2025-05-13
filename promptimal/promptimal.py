@@ -130,7 +130,7 @@ def main():
     )
     parser.add_argument(
         "--num_samples",
-        default=2,
+        default=3,
         required=False,
         type=int,
         help="Number of prompts to generate in each iteration.",
