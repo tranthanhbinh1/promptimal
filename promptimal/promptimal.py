@@ -47,6 +47,8 @@ def generate_evaluator(
                     str(evaluator_path),
                     "--prompt",
                     candidate.prompt,
+                    "--full-eval-threshold",
+                    "5",
                 ],
                 capture_output=True,
                 text=True,
