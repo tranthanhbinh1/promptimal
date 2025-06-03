@@ -1,8 +1,8 @@
 # Standard library
 import time
 import asyncio
-import logging
 from typing import List, Optional, Tuple
+from loguru import logger as logging
 
 # Third party - Remove urwid and pyperclip since we're removing UI
 # import urwid
@@ -15,14 +15,6 @@ try:
 except ImportError:
     from optimizer import optimize
     from dtos import ProgressStep
-
-# Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s",
-    datefmt="%H:%M:%S",
-)
-logger = logging.getLogger(__name__)
 
 #########
 # HELPERS
@@ -51,8 +43,8 @@ class App:
             )
         ]
 
-        logger.info("=== Prompt Optimization Started ===")
-        logger.info(f"Initial prompt: {init_prompt}")
+        logging.info("=== Prompt Optimization Started ===")
+        logging.info(f"Initial prompt: {init_prompt}")
 
     def _format_elapsed_time(
         self, start_time: float, end_time: Optional[float] = None
@@ -71,9 +63,9 @@ class App:
         progress_pct = f"{step.value * 100:.1f}%" if step.value else "0.0%"
 
         if step.is_terminal:
-            logger.info(f"✓ {step.message}")
+            logging.info(f"✓ {step.message}")
         else:
-            logger.info(f"[{progress_pct}] {step.message} (Elapsed: {elapsed})")
+            logging.info(f"[{progress_pct}] {step.message} (Elapsed: {elapsed})")
 
         # Log token usage and cost if available
         if step.token_count:
@@ -81,7 +73,7 @@ class App:
             output_toks = step.token_count.output
             total_toks = input_toks + output_toks
             cost = (input_toks * (2.50 / 1000000)) + (output_toks * (10.0 / 1000000))
-            logger.info(
+            logging.info(
                 f"   Tokens: {total_toks} | Cost: ${cost:.4f} | Prompts evaluated: {step.num_prompts}"
             )
 
@@ -95,7 +87,7 @@ class App:
         else:
             level = "MED"
 
-        logger.info(f"📊 Score updated: {score_pct:.2f}% ({level})")
+        logging.info(f"📊 Score updated: {score_pct:.2f}% ({level})")
 
     async def optimize(self, **kwargs):
         async for step in optimize(self.prompt, **kwargs):
@@ -124,14 +116,14 @@ class App:
 
             # Log prompt changes
             if self.prompt != old_prompt:
-                logger.info("🔄 Prompt updated:")
-                logger.info(f"   New prompt: {self.prompt}")
+                logging.info("🔄 Prompt updated:")
+                logging.info(f"   New prompt: {self.prompt}")
 
         self.is_finished = True
-        logger.info("=== Optimization Complete ===")
-        logger.info(f"Final prompt: {self.prompt}")
+        logging.info("=== Optimization Complete ===")
+        logging.info(f"Final prompt: {self.prompt}")
         if self.score is not None:
-            logger.info(f"Final score: {self.score * 100:.2f}%")
+            logging.info(f"Final score: {self.score * 100:.2f}%")
 
     def start(self, **kwargs) -> Tuple[str, bool]:
         # Run optimization without UI
