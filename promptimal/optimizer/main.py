@@ -2,7 +2,7 @@
 import os
 import time
 import asyncio
-from typing import Optional
+from typing import Optional, Callable
 
 # Third party
 from google.genai import Client
@@ -34,7 +34,7 @@ async def optimize(
     num_elites: int = 2,  # No. of top candidates to pass onto the next generation
     threshold: float = 1.0,
     api_key: str = "",
-    evaluator: Optional[callable] = None,
+    evaluator: Optional[Callable] = None,
 ):
     evaluate = evaluate_fitness if not evaluator else evaluator
     genai = Client(api_key=os.getenv("GOOGLE_AI_API_KEY", api_key))
@@ -42,6 +42,11 @@ async def optimize(
 
     best_candidate = initial_prompt = PromptCandidate(prompt)
     token_count = TokenCount(0, 0)
+
+    # Check if evaluator has iteration tracking capability
+    has_iteration_tracking = (
+        hasattr(evaluator, "advance_iteration") if evaluator else False
+    )
 
     yield ProgressStep(
         index=0,
@@ -93,6 +98,10 @@ async def optimize(
         )
 
     for index in range(num_iters):
+        # Advance iteration for strategy-aware evaluators
+        if has_iteration_tracking:
+            evaluator.advance_iteration()
+
         start_time = time.time()
         yield ProgressStep(
             index=index + 1,
